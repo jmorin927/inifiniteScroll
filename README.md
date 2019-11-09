@@ -1,4 +1,4 @@
-# This is a prototype to display an infinite scrolling collection view. (Think of a stock ticker)
+# Prototype to display a infinite horizontal scrolling collection view. (Think of a stock ticker)
 
 - Uses timers to update the content offset
 - Uses frameDeltas to update movement based on the the ticks of the device
