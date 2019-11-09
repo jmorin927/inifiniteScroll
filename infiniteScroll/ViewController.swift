@@ -30,7 +30,7 @@ class ViewController: UIViewController {
 
     // MARK: - Internal Properties
 
-    var infiniteScrollCollectionViewProcessor: InfiniteScrollCollectionViewProcessor?
+    var infiniteScrollCollectionViewProcessor: HorizontalInfiniteScrollCollectionViewProcessor?
 
     // MARK: - Private Properties
 
@@ -60,7 +60,7 @@ extension ViewController {
         super.viewDidLoad()
 
         createContent()
-        createInfiniteScrollCollectionViewProcessor()
+        createHorizontalInfiniteScrollCollectionViewProcessor()
     }
 
 }
@@ -69,9 +69,9 @@ extension ViewController {
 
 extension ViewController {
 
-    private func createInfiniteScrollCollectionViewProcessor() {
-        infiniteScrollCollectionViewProcessor = InfiniteScrollCollectionViewProcessor(collectionView: collectionView)
-        infiniteScrollCollectionViewProcessor?.moveDelta = 1.5
+    private func createHorizontalInfiniteScrollCollectionViewProcessor() {
+        infiniteScrollCollectionViewProcessor = HorizontalInfiniteScrollCollectionViewProcessor(collectionView: collectionView)
+        infiniteScrollCollectionViewProcessor?.moveDelta = 0.25
         infiniteScrollCollectionViewProcessor?.scrollDirection = .left
         infiniteScrollCollectionViewProcessor?.collectionViewCellSize = CGSize(width: 108, height: 108)
         infiniteScrollCollectionViewProcessor?.collectionViewMinSpacing = 10.0

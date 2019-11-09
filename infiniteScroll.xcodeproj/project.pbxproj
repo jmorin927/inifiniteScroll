@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		A251E245235F5BAD002ED83F /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A251E244235F5BAD002ED83F /* CollectionViewCell.swift */; };
 		A251E247235F5F24002ED83F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A251E246235F5F24002ED83F /* Extensions.swift */; };
-		A251E24B235F70E2002ED83F /* InfiniteScrollProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A251E24A235F70E2002ED83F /* InfiniteScrollProcessor.swift */; };
+		A251E24B235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A251E24A235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift */; };
 		A29A92D5235E3A7F00356316 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29A92D4235E3A7F00356316 /* AppDelegate.swift */; };
 		A29A92D7235E3A7F00356316 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29A92D6235E3A7F00356316 /* ViewController.swift */; };
 		A29A92DA235E3A7F00356316 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A29A92D8235E3A7F00356316 /* Main.storyboard */; };
@@ -20,7 +20,7 @@
 /* Begin PBXFileReference section */
 		A251E244235F5BAD002ED83F /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		A251E246235F5F24002ED83F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		A251E24A235F70E2002ED83F /* InfiniteScrollProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfiniteScrollProcessor.swift; sourceTree = "<group>"; };
+		A251E24A235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalInfiniteScrollProcessor.swift; sourceTree = "<group>"; };
 		A29A92D1235E3A7F00356316 /* infiniteScroll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = infiniteScroll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A29A92D4235E3A7F00356316 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A29A92D6235E3A7F00356316 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -61,14 +61,14 @@
 			isa = PBXGroup;
 			children = (
 				A29A92D4235E3A7F00356316 /* AppDelegate.swift */,
-				A29A92D6235E3A7F00356316 /* ViewController.swift */,
-				A29A92D8235E3A7F00356316 /* Main.storyboard */,
-				A29A92DB235E3A8000356316 /* Assets.xcassets */,
-				A29A92DD235E3A8000356316 /* LaunchScreen.storyboard */,
-				A29A92E0235E3A8000356316 /* Info.plist */,
 				A251E244235F5BAD002ED83F /* CollectionViewCell.swift */,
 				A251E246235F5F24002ED83F /* Extensions.swift */,
-				A251E24A235F70E2002ED83F /* InfiniteScrollProcessor.swift */,
+				A251E24A235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift */,
+				A29A92E0235E3A8000356316 /* Info.plist */,
+				A29A92DD235E3A8000356316 /* LaunchScreen.storyboard */,
+				A29A92D8235E3A7F00356316 /* Main.storyboard */,
+				A29A92D6235E3A7F00356316 /* ViewController.swift */,
+				A29A92DB235E3A8000356316 /* Assets.xcassets */,
 			);
 			path = infiniteScroll;
 			sourceTree = "<group>";
@@ -144,7 +144,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A251E24B235F70E2002ED83F /* InfiniteScrollProcessor.swift in Sources */,
+				A251E24B235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift in Sources */,
 				A29A92D7235E3A7F00356316 /* ViewController.swift in Sources */,
 				A29A92D5235E3A7F00356316 /* AppDelegate.swift in Sources */,
 				A251E245235F5BAD002ED83F /* CollectionViewCell.swift in Sources */,

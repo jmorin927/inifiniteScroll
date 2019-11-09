@@ -33,6 +33,45 @@ extension UIColor {
 
 // MARK: -
 
+extension Date {
+    
+    static func currentTimeInMilliSeconds() -> Int {
+        let currentDate = Date()
+        let since1970 = currentDate.timeIntervalSince1970
+        return Int(since1970 * 1000)
+    }
+    
+}
+
+// MARK: -
+
+extension DispatchTimeInterval {
+
+    func toCGFloat() -> CGFloat? {
+        var result: CGFloat? = 0.0
+
+        switch self {
+        case .seconds(let value):
+            result = CGFloat(value)
+        case .milliseconds(let value):
+            result = CGFloat(value) * 0.001
+        case .microseconds(let value):
+            result = CGFloat(value) * 0.000001
+        case .nanoseconds(let value):
+            result = CGFloat(value) * 0.000000001
+        case .never:
+            result = nil
+        @unknown default:
+            result = nil
+        }
+
+        return result
+    }
+
+}
+
+// MARK: -
+
 @IBDesignable extension UIView {
 
     @IBInspectable var borderColor:UIColor? {

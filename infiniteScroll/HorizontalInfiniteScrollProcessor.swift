@@ -1,5 +1,5 @@
 //
-//  InfiniteScrollCollectionViewProcessor.swift
+//  HorizontalInfiniteScrollCollectionViewProcessor.swift
 //  infiniteScroll
 //
 //  Created by Jonathan Morin on 10/22/19.
@@ -10,8 +10,8 @@ import UIKit
 
 // MARK: -
 
-/// This class will auto scroll a collection view
-class InfiniteScrollCollectionViewProcessor: NSObject {
+/// This class will auto scroll a collection view horizontally
+class HorizontalInfiniteScrollCollectionViewProcessor: NSObject {
 
     // MARK: - Types
 
@@ -27,24 +27,33 @@ class InfiniteScrollCollectionViewProcessor: NSObject {
 
     // MARK: - Properties
 
-    /// Pause state; Default = true
-    var paused: Bool = true
     /// Move Delta (how fast to move scroll); Default = 1.0
     var moveDelta: CGFloat = 1.0
-    /// How often to run the update; Default = .milliseconds(50)
-    var processorTimerUpdateInterval: DispatchTimeInterval = .milliseconds(50)
-    /// How often to run auto start (if user has interacted with the collection view); Default = .seconds(50)
+
+    /// How often to run the update; Default = .milliseconds(15)
+    var processorTimerUpdateInterval: DispatchTimeInterval = .milliseconds(15)
+
+    /// How often to run auto start (if user has interacted with the collection view); Default = .seconds(5)
     var autoStartTimerUpdateInterval: DispatchTimeInterval = .seconds(5)
+
+    /// Time interval to auto resume after a cell has been selected; Default = .seconds(5)
+    var autoResumeTimerUpdateInterval: DispatchTimeInterval = .seconds(5)
+
     /// Direction to scroll collection view; Default = .right
     var scrollDirection: ScrollDirection = .right
+
     /// Right now we only handle specific sized collection view cells; Default = CGSize(width: 50, height: 50)
     var collectionViewCellSize: CGSize = CGSize(width: 50, height: 50)
+
     /// Spacing between collection view cells; Default = 0.0
     var collectionViewMinSpacing: CGFloat = 0.0
 
+    /// Callback for collection view cell selection
     var collectionViewSelectContentCallback: CollectionViewSelectContentCallback?
 
-    /// You need to properly rotate your content array based on the scroll direction
+    /// Callback to request that you rotate your collection view content data array
+    ///
+    /// NOTE: You need to properly rotate your content array based on the scroll direction
     ///
     /// Scroll Direction:
     ///     right = remove last, prepend
@@ -58,6 +67,9 @@ class InfiniteScrollCollectionViewProcessor: NSObject {
     private(set) var contentOffset: CGPoint = CGPoint(x: 0, y: 0)
     private(set) var processorTimer: DispatchSourceTimer?
     private(set) var autoStartTimer: DispatchSourceTimer?
+    private(set) var prevMilliSeconds: Int = Date.currentTimeInMilliSeconds()
+    private(set) var frameDelta: CGFloat = 0.0
+    private(set) var paused: Bool = true
 
     // MARK: - Init
 
@@ -82,7 +94,7 @@ class InfiniteScrollCollectionViewProcessor: NSObject {
 
 // MARK: - Internal Methods
 
-extension InfiniteScrollCollectionViewProcessor {
+extension HorizontalInfiniteScrollCollectionViewProcessor {
 
     /// Call this when the controller you instantiated InfiniteScrollCollectionViewProcessor in gets destroyed
     func destroy() {
@@ -107,7 +119,7 @@ extension InfiniteScrollCollectionViewProcessor {
 
 // MARK: - UICollectionViewDelegate
 
-extension InfiniteScrollCollectionViewProcessor: UICollectionViewDelegate {
+extension HorizontalInfiniteScrollCollectionViewProcessor: UICollectionViewDelegate {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         pauseProcessor()
@@ -153,7 +165,7 @@ extension InfiniteScrollCollectionViewProcessor: UICollectionViewDelegate {
 
 // MARK: - Private Methods
 
-extension InfiniteScrollCollectionViewProcessor {
+extension HorizontalInfiniteScrollCollectionViewProcessor {
 
     private func create() {
         createProcessorTimer()
@@ -173,7 +185,7 @@ extension InfiniteScrollCollectionViewProcessor {
             // Increment content offset by moveDelta
             switch self.scrollDirection {
             case .right:
-                self.contentOffset.x -= self.moveDelta
+                self.contentOffset.x -= (self.moveDelta * self.frameDelta)
                 if (self.contentOffset.x <= 0) {
                     // Calculate new offset, which is the current offset minus the width of a cell
                     let contentOffsetX = self.contentOffset.x
@@ -183,7 +195,7 @@ extension InfiniteScrollCollectionViewProcessor {
                     rotateContent = true
                 }
             case .left:
-                self.contentOffset.x += self.moveDelta
+                self.contentOffset.x += (self.moveDelta * self.frameDelta)
                 if (self.contentOffset.x >= (collectionView.contentSize.width - collectionView.bounds.width)) {
                     // Calculate new offset, which is the current offset minus the width of a cell
                     let contentOffsetX = self.contentOffset.x
@@ -229,6 +241,14 @@ extension InfiniteScrollCollectionViewProcessor {
                 guard let self = self else {
                     return
                 }
+
+                // Update frameDelta and prevMilliseconds
+                if let floatUpdateInterval = self.processorTimerUpdateInterval.toCGFloat() {
+                    let currMilliSeconds = Date.currentTimeInMilliSeconds()
+                    self.frameDelta = CGFloat(currMilliSeconds - self.prevMilliSeconds) / floatUpdateInterval / 1000.0
+                    self.prevMilliSeconds = currMilliSeconds
+                }
+
                 self.process()
             }
         )
@@ -250,7 +270,7 @@ extension InfiniteScrollCollectionViewProcessor {
     }
 
     private func createTimer(startTime: DispatchTimeInterval = .milliseconds(0),
-                             repeatInterval: DispatchTimeInterval = .milliseconds(50),
+                             repeatInterval: DispatchTimeInterval = .milliseconds(15),
                              eventHandler: TimerEventHandler? = nil) -> DispatchSourceTimer? {
         let timer = DispatchSource.makeTimerSource()
         timer.schedule(deadline: DispatchTime.now() + startTime,
