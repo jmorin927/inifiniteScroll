@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A21CE37A237732E800593760 /* FrameTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A21CE379237732E800593760 /* FrameTimer.swift */; };
 		A251E245235F5BAD002ED83F /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A251E244235F5BAD002ED83F /* CollectionViewCell.swift */; };
 		A251E247235F5F24002ED83F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A251E246235F5F24002ED83F /* Extensions.swift */; };
 		A251E24B235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A251E24A235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A21CE379237732E800593760 /* FrameTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameTimer.swift; sourceTree = "<group>"; };
 		A251E244235F5BAD002ED83F /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		A251E246235F5F24002ED83F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A251E24A235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalInfiniteScrollProcessor.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				A29A92D4235E3A7F00356316 /* AppDelegate.swift */,
 				A251E244235F5BAD002ED83F /* CollectionViewCell.swift */,
 				A251E246235F5F24002ED83F /* Extensions.swift */,
+				A21CE379237732E800593760 /* FrameTimer.swift */,
 				A251E24A235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift */,
 				A29A92E0235E3A8000356316 /* Info.plist */,
 				A29A92DD235E3A8000356316 /* LaunchScreen.storyboard */,
@@ -145,6 +148,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A251E24B235F70E2002ED83F /* HorizontalInfiniteScrollProcessor.swift in Sources */,
+				A21CE37A237732E800593760 /* FrameTimer.swift in Sources */,
 				A29A92D7235E3A7F00356316 /* ViewController.swift in Sources */,
 				A29A92D5235E3A7F00356316 /* AppDelegate.swift in Sources */,
 				A251E245235F5BAD002ED83F /* CollectionViewCell.swift in Sources */,

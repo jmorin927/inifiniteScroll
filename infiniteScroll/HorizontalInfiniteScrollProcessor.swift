@@ -16,7 +16,6 @@ class HorizontalInfiniteScrollCollectionViewProcessor: NSObject {
     // MARK: - Types
 
     typealias DefaultCallback = () -> ()
-    typealias TimerEventHandler = DefaultCallback
     typealias CollectionViewRotateContentCallback = DefaultCallback
     typealias CollectionViewSelectContentCallback = (IndexPath) -> ()
 
@@ -31,13 +30,10 @@ class HorizontalInfiniteScrollCollectionViewProcessor: NSObject {
     var moveDelta: CGFloat = 1.0
 
     /// How often to run the update; Default = .milliseconds(15)
-    var processorTimerUpdateInterval: DispatchTimeInterval = .milliseconds(15)
+    var updateTimerInterval: DispatchTimeInterval = .milliseconds(15)
 
     /// How often to run auto start (if user has interacted with the collection view); Default = .seconds(5)
-    var autoStartTimerUpdateInterval: DispatchTimeInterval = .seconds(5)
-
-    /// Time interval to auto resume after a cell has been selected; Default = .seconds(5)
-    var autoResumeTimerUpdateInterval: DispatchTimeInterval = .seconds(5)
+    var autoResumeTimerInterval: DispatchTimeInterval = .seconds(5)
 
     /// Direction to scroll collection view; Default = .right
     var scrollDirection: ScrollDirection = .right
@@ -63,12 +59,10 @@ class HorizontalInfiniteScrollCollectionViewProcessor: NSObject {
     // MARK: - Private Properties
 
     private(set) var parentController: UIViewController?
+    private(set) var updateTimer: DispatchSourceTimer?
+    private(set) var autoResumeTimer: DispatchSourceTimer?
     private(set) var collectionView: UICollectionView?
     private(set) var contentOffset: CGPoint = CGPoint(x: 0, y: 0)
-    private(set) var processorTimer: DispatchSourceTimer?
-    private(set) var autoStartTimer: DispatchSourceTimer?
-    private(set) var prevMilliSeconds: Int = Date.currentTimeInMilliSeconds()
-    private(set) var frameDelta: CGFloat = 0.0
     private(set) var paused: Bool = true
 
     // MARK: - Init
@@ -98,11 +92,11 @@ extension HorizontalInfiniteScrollCollectionViewProcessor {
 
     /// Call this when the controller you instantiated InfiniteScrollCollectionViewProcessor in gets destroyed
     func destroy() {
-        processorTimer?.cancel()
-        processorTimer = nil
+        updateTimer?.cancel()
+        updateTimer = nil
 
-        autoStartTimer?.cancel()
-        autoStartTimer = nil
+        autoResumeTimer?.cancel()
+        autoResumeTimer = nil
 
         parentController = nil
         collectionView = nil
@@ -110,9 +104,12 @@ extension HorizontalInfiniteScrollCollectionViewProcessor {
 
     /// Tells the processor too resume scrolling and reset the auto start timer
     func resumeProcessor() {
-        autoStartTimer?.schedule(deadline: DispatchTime.now(),
-                                 repeating: autoStartTimerUpdateInterval)
-        autoStartTimer?.resume()
+        paused = false
+
+        autoResumeTimer?.suspend()
+        autoResumeTimer?.schedule(deadline: DispatchTime.now(),
+                                  repeating: autoResumeTimerInterval)
+        autoResumeTimer?.resume()
     }
 
 }
@@ -168,8 +165,12 @@ extension HorizontalInfiniteScrollCollectionViewProcessor: UICollectionViewDeleg
 extension HorizontalInfiniteScrollCollectionViewProcessor {
 
     private func create() {
-        createProcessorTimer()
-        createAutoStartTimer()
+        updateTimer = FrameTimer.createUpdateTimer(repeatInterval: updateTimerInterval,
+                                                   eventHandler: process)
+        autoResumeTimer = FrameTimer.createAutoStartTimer(startTime: .seconds(1),
+                                                          repeatInterval: autoResumeTimerInterval)
+
+        resumeProcessor()
     }
 
     private func process() {
@@ -185,7 +186,7 @@ extension HorizontalInfiniteScrollCollectionViewProcessor {
             // Increment content offset by moveDelta
             switch self.scrollDirection {
             case .right:
-                self.contentOffset.x -= (self.moveDelta * self.frameDelta)
+                self.contentOffset.x -= (self.moveDelta * FrameTimer.frameDelta)
                 if (self.contentOffset.x <= 0) {
                     // Calculate new offset, which is the current offset minus the width of a cell
                     let contentOffsetX = self.contentOffset.x
@@ -195,7 +196,7 @@ extension HorizontalInfiniteScrollCollectionViewProcessor {
                     rotateContent = true
                 }
             case .left:
-                self.contentOffset.x += (self.moveDelta * self.frameDelta)
+                self.contentOffset.x += (self.moveDelta * FrameTimer.frameDelta)
                 if (self.contentOffset.x >= (collectionView.contentSize.width - collectionView.bounds.width)) {
                     // Calculate new offset, which is the current offset minus the width of a cell
                     let contentOffsetX = self.contentOffset.x
@@ -222,62 +223,16 @@ extension HorizontalInfiniteScrollCollectionViewProcessor {
     private func pauseProcessor() {
         paused = true
 
-        autoStartTimer?.suspend()
-        autoStartTimer?.schedule(deadline: DispatchTime.now() + .seconds(5),
-                                 repeating: autoStartTimerUpdateInterval)
-        autoStartTimer?.resume()
+        autoResumeTimer?.suspend()
+        autoResumeTimer?.schedule(deadline: DispatchTime.now() + .seconds(5),
+                                  repeating: autoResumeTimerInterval)
+        autoResumeTimer?.resume()
     }
 
     private func stopProcessor() {
         paused = true
 
-        autoStartTimer?.suspend()
-    }
-
-    private func createProcessorTimer() {
-        processorTimer = createTimer(
-            repeatInterval: processorTimerUpdateInterval,
-            eventHandler: { [weak self] in
-                guard let self = self else {
-                    return
-                }
-
-                // Update frameDelta and prevMilliseconds
-                if let floatUpdateInterval = self.processorTimerUpdateInterval.toCGFloat() {
-                    let currMilliSeconds = Date.currentTimeInMilliSeconds()
-                    self.frameDelta = CGFloat(currMilliSeconds - self.prevMilliSeconds) / floatUpdateInterval / 1000.0
-                    self.prevMilliSeconds = currMilliSeconds
-                }
-
-                self.process()
-            }
-        )
-    }
-
-    private func createAutoStartTimer() {
-        autoStartTimer = createTimer(
-            startTime: .seconds(1),
-            repeatInterval: autoStartTimerUpdateInterval,
-            eventHandler: { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                if self.paused {
-                    self.paused = false
-                }
-            }
-        )
-    }
-
-    private func createTimer(startTime: DispatchTimeInterval = .milliseconds(0),
-                             repeatInterval: DispatchTimeInterval = .milliseconds(15),
-                             eventHandler: TimerEventHandler? = nil) -> DispatchSourceTimer? {
-        let timer = DispatchSource.makeTimerSource()
-        timer.schedule(deadline: DispatchTime.now() + startTime,
-                       repeating: repeatInterval)
-        timer.setEventHandler(handler: eventHandler)
-        timer.resume()
-        return timer
+        autoResumeTimer?.suspend()
     }
 
 }
